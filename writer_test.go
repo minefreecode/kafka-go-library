@@ -1,22 +1,27 @@
 package kafka
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/segmentio/kafka-go/sasl/plain"
 	"io"
 	"math"
 	"strconv"
 	"strings"
 	"sync"
-	"testing"
 	"time"
-
-	"github.com/segmentio/kafka-go/sasl/plain"
 )
 
+// Импортирование
+import (
+	"context"
+	"testing"
+)
+
+// Функция тестирования пакетно
 func TestBatchQueue(t *testing.T) {
-	tests := []struct {
+	// Объявляет срез описанного ниже типа
+	tests := []struct { //тип
 		scenario string
 		function func(*testing.T)
 	}{
@@ -34,17 +39,19 @@ func TestBatchQueue(t *testing.T) {
 		},
 	}
 
+	// Проходимся по сразам циклом
 	for _, test := range tests {
-		testFunc := test.function
-		t.Run(test.scenario, func(t *testing.T) {
-			t.Parallel()
-			testFunc(t)
+		testFunc := test.function                 //Берем функцию
+		t.Run(test.scenario, func(t *testing.T) { //Запускаем функцию используя метод тестов
+			t.Parallel() //Включаем флаг что тесты запускаются параллельно
+			testFunc(t)  //Выполняем функцию
 		})
 	}
 }
 
+// Один из тестов
 func testBatchQueuePutWakesSleepingGetter(t *testing.T) {
-	bq := newBatchQueue(10)
+	bq := newBatchQueue(10) //Создается очередь пакетов
 	var wg sync.WaitGroup
 	ready := make(chan struct{})
 	var batch *writeBatch
